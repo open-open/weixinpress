@@ -123,7 +123,7 @@ function update_weixinpress_option(){
 function add_weixinpress_option(){
 	$defalut_val = array(
 		WXP_TOKEN => 'weixinpress',
-		WXP_URL_STR => '526e2b186f798',
+		WXP_URL_STR => 'weixinpress',
 		WXP_WELCOME => '欢迎关注小站，更多精彩内容，可通过发送关键字获取！如：
 发送“首页”，将获取首页文章
 发送“帮助”或“help”，查看帮助信息
@@ -191,7 +191,7 @@ function delete_weixinpress_option(){
 	delete_option(WXP_DEFAULT_THUMB);
 }
 register_activation_hook(__FILE__,'add_weixinpress_option');
-//register_deactivation_hook(__FILE__,'delete_weixinpress_option');
+register_deactivation_hook(__FILE__,'delete_weixinpress_option');
 
 // Custom message bar
 function weixinpress_topbarmessage($msg) {
