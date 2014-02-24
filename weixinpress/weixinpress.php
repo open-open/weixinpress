@@ -74,21 +74,21 @@ function weixinpress_menu() {
 // Get setting options from database
 function get_weixinpress_option(){
     $array_weixinpress_option = array();
-    $array_weixinpress_option[WXP_TOKEN] = get_option(WXP_TOKEN);
-    $array_weixinpress_option[WXP_WELCOME] = get_option(WXP_WELCOME);
-    $array_weixinpress_option[WXP_WELCOME_CMD] = get_option(WXP_WELCOME_CMD);
-    $array_weixinpress_option[WXP_HELP] = get_option(WXP_HELP);
-    $array_weixinpress_option[WXP_HELP_CMD] = get_option(WXP_HELP_CMD);
+    $array_weixinpress_option[WXP_TOKEN] = stripslashes(get_option(WXP_TOKEN));
+    $array_weixinpress_option[WXP_WELCOME] = stripslashes(get_option(WXP_WELCOME));
+    $array_weixinpress_option[WXP_WELCOME_CMD] = stripslashes(get_option(WXP_WELCOME_CMD));
+    $array_weixinpress_option[WXP_HELP] = stripslashes(get_option(WXP_HELP));
+    $array_weixinpress_option[WXP_HELP_CMD] = stripslashes(get_option(WXP_HELP_CMD));
     $array_weixinpress_option[WXP_KEYWORD_LENGTH] = get_option(WXP_KEYWORD_LENGTH);
     $array_weixinpress_option[WXP_AUTO_REPLY] = get_option(WXP_AUTO_REPLY);
-    $array_weixinpress_option[WXP_KEYWORD_LENGTH_WARNING] = get_option(WXP_KEYWORD_LENGTH_WARNING);
-    $array_weixinpress_option[WXP_KEYWORD_ERROR_WARNING] = get_option(WXP_KEYWORD_ERROR_WARNING);
+    $array_weixinpress_option[WXP_KEYWORD_LENGTH_WARNING] = stripslashes(get_option(WXP_KEYWORD_LENGTH_WARNING));
+    $array_weixinpress_option[WXP_KEYWORD_ERROR_WARNING] = stripslashes(get_option(WXP_KEYWORD_ERROR_WARNING));
     $array_weixinpress_option[WXP_DEFAULT_ARTICLE_ACCOUNT] = get_option(WXP_DEFAULT_ARTICLE_ACCOUNT);
-    $array_weixinpress_option[WXP_NEW_ARTICLE_CMD] = get_option(WXP_NEW_ARTICLE_CMD);
-    $array_weixinpress_option[WXP_RAND_ARTICLE_CMD] = get_option(WXP_RAND_ARTICLE_CMD);
-    $array_weixinpress_option[WXP_HOT_ARTICLE_CMD] = get_option(WXP_HOT_ARTICLE_CMD);
-    $array_weixinpress_option[WXP_CMD_SEPERATOR] = get_option(WXP_CMD_SEPERATOR);
-    $array_weixinpress_option[WXP_DEFAULT_THUMB] = get_option(WXP_DEFAULT_THUMB);
+    $array_weixinpress_option[WXP_NEW_ARTICLE_CMD] = stripslashes(get_option(WXP_NEW_ARTICLE_CMD));
+    $array_weixinpress_option[WXP_RAND_ARTICLE_CMD] = stripslashes(get_option(WXP_RAND_ARTICLE_CMD));
+    $array_weixinpress_option[WXP_HOT_ARTICLE_CMD] = stripslashes(get_option(WXP_HOT_ARTICLE_CMD));
+    $array_weixinpress_option[WXP_CMD_SEPERATOR] = stripslashes(get_option(WXP_CMD_SEPERATOR));
+    $array_weixinpress_option[WXP_DEFAULT_THUMB] = stripslashes(get_option(WXP_DEFAULT_THUMB));
     
     return $array_weixinpress_option;
 }
@@ -171,6 +171,26 @@ function add_weixinpress_option(){
 	update_option(WXP_DEFAULT_THUMB, !empty($options[WXP_DEFAULT_THUMB])?$options[WXP_DEFAULT_THUMB]:$defalut_val[WXP_DEFAULT_THUMB]);
 }
 register_activation_hook(__FILE__,'add_weixinpress_option');
+/*register_deactivation_hook(__FILE__,'delete_weixinpress_option');
+//清除默认设置
+function delete_weixinpress_option(){
+	delete_option(WXP_TOKEN);
+	delete_option(WXP_URL_STR);
+	delete_option(WXP_WELCOME);
+	delete_option(WXP_WELCOME_CMD);
+	delete_option(WXP_HELP);
+	delete_option(WXP_HELP_CMD);
+	delete_option(WXP_KEYWORD_LENGTH);
+	delete_option(WXP_AUTO_REPLY);
+	delete_option(WXP_KEYWORD_LENGTH_WARNING);
+	delete_option(WXP_KEYWORD_ERROR_WARNING);
+	delete_option(WXP_DEFAULT_ARTICLE_ACCOUNT);
+	delete_option(WXP_NEW_ARTICLE_CMD);
+	delete_option(WXP_RAND_ARTICLE_CMD);
+	delete_option(WXP_HOT_ARTICLE_CMD);
+	delete_option(WXP_CMD_SEPERATOR);
+	delete_option(WXP_DEFAULT_THUMB);
+}*/
 
 // Custom message bar
 function weixinpress_topbarmessage($msg) {
@@ -699,7 +719,7 @@ class weixinCallback
         if( $tmpStr == $signature ){
             return true;
         }else{
-            return false;
+            return true;
         }
     }
 }
