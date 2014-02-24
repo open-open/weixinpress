@@ -1,16 +1,15 @@
 <?php
 /*
 Plugin Name: WeixinPress
-Plugin URI: http://www.houqun.me/articles/roll-out-weixinpress-plugin-for-wordpress-06.html
+Plugin URI: http://www.houqun.me/articles/roll-out-weixinpress-plugin-for-wordpress.html
 Description: WeixinPress的主要功能就是能够将你的微信公众账号和你的WordPress博客关联，搜索和用户发送关键字匹配的文章，依据命令查看最新文章、热门文章和随机文章。<br />
-Version: 0.6
+Version: 0.6.1
 Author: Will HQ
 Author URI: http://www.houqun.me
 */
 
 //define constants.  
 define('WXP_TOKEN'                   , 'wxp_token');
-define('WXP_URL_STR'                 , 'wxp_url_str');
 define('WXP_WELCOME'                 , 'wxp_welcome');
 define('WXP_WELCOME_CMD'             , 'wxp_welcome_cmd');
 define('WXP_HELP'                    , 'wxp_help');
@@ -53,7 +52,7 @@ function traceHttp(){
 }
 
 function logger($content){
-    //file_put_contents(WXP_FILE_PATH."/log.html", date('Y-m-d H:i:s ').$content.'<br>', FILE_APPEND);
+    file_put_contents(WXP_FILE_PATH."/log.html", date('Y-m-d H:i:s ').$content.'<br>', FILE_APPEND);
 }
 
 // Add plugin memu    
@@ -76,7 +75,6 @@ function weixinpress_menu() {
 function get_weixinpress_option(){
     $array_weixinpress_option = array();
     $array_weixinpress_option[WXP_TOKEN] = get_option(WXP_TOKEN);
-    $array_weixinpress_option[WXP_URL_STR] = get_option(WXP_URL_STR);
     $array_weixinpress_option[WXP_WELCOME] = get_option(WXP_WELCOME);
     $array_weixinpress_option[WXP_WELCOME_CMD] = get_option(WXP_WELCOME_CMD);
     $array_weixinpress_option[WXP_HELP] = get_option(WXP_HELP);
@@ -99,7 +97,6 @@ function get_weixinpress_option(){
 function update_weixinpress_option(){
     if($_POST['action']=='保存设置'){
         update_option(WXP_TOKEN, $_POST['wxp-token']);
-        update_option(WXP_URL_STR, $_POST['wxp-url-str']);
         update_option(WXP_WELCOME, $_POST['wxp-welcome']);
         update_option(WXP_WELCOME_CMD, $_POST['wxp-welcome-cmd']);
         update_option(WXP_HELP, $_POST['wxp-help']);
@@ -119,79 +116,6 @@ function update_weixinpress_option(){
     }
     weixinpress_topbarmessage('恭喜，更新配置成功');
 }
-//添加默认配置
-function add_weixinpress_option(){
-	$defalut_val = array(
-		WXP_TOKEN => 'weixinpress',
-		WXP_URL_STR => 'weixinpress',
-		WXP_WELCOME => '欢迎关注小站，更多精彩内容，可通过发送关键字获取！如：
-发送“首页”，将获取首页文章
-发送“帮助”或“help”，查看帮助信息
-发送“最新文章”，将获取最新文章
-发送“最热文章”，将获取最热门的文章
-发送“随机文章”，将获取随机选取的文章发送',
-		WXP_WELCOME_CMD => '欢迎 welcome',
-		WXP_HELP => '非常感谢关注小站，可通过发送关键字获取精彩内容！如：
-发送“首页”，将获取首页文章
-发送“帮助”或“help”，查看帮助信息
-发送“最新文章”或“new”，将获取最新文章
-发送“最热文章”或“hot”，将获取最热门的文章
-发送“随机文章”或“rand”，将获取随机选取的文章发送',
-		WXP_HELP_CMD => '帮助 help',
-		WXP_KEYWORD_LENGTH => '15',
-		WXP_AUTO_REPLY => 0,
-		WXP_KEYWORD_LENGTH_WARNING => '',
-		WXP_KEYWORD_ERROR_WARNING => '你输入的关键字未匹配到任何内容，可以换其他关键词试试哦，如：
-发送“首页”，将获取首页文章
-发送“帮助”或“help”，查看帮助信息
-发送“最新文章”，将获取最新文章
-发送“最热文章”，将获取最热门的文章
-发送“随机文章”，将获取随机选取的文章发送',
-		WXP_DEFAULT_ARTICLE_ACCOUNT => 10,
-		WXP_NEW_ARTICLE_CMD => '最新文章 new',
-		WXP_RAND_ARTICLE_CMD => '随机文章 rand',
-		WXP_HOT_ARTICLE_CMD => '最热文章 hot',
-		WXP_CMD_SEPERATOR => '@',
-		WXP_DEFAULT_THUMB => '',
-	);
-	update_option(WXP_TOKEN, $defalut_val[WXP_TOKEN]);
-	update_option(WXP_URL_STR, $defalut_val[WXP_URL_STR]);
-	update_option(WXP_WELCOME, $defalut_val[WXP_WELCOME]);
-	update_option(WXP_WELCOME_CMD, $defalut_val[WXP_WELCOME_CMD]);
-	update_option(WXP_HELP, $defalut_val[WXP_HELP]);
-	update_option(WXP_HELP_CMD, $defalut_val[WXP_HELP_CMD]);
-	update_option(WXP_KEYWORD_LENGTH, $defalut_val[WXP_KEYWORD_LENGTH]);
-	update_option(WXP_AUTO_REPLY, $defalut_val[WXP_AUTO_REPLY]);
-	update_option(WXP_KEYWORD_LENGTH_WARNING, $defalut_val[WXP_KEYWORD_LENGTH_WARNING]);
-	update_option(WXP_KEYWORD_ERROR_WARNING, $defalut_val[WXP_KEYWORD_ERROR_WARNING]);
-	update_option(WXP_DEFAULT_ARTICLE_ACCOUNT, $defalut_val[WXP_DEFAULT_ARTICLE_ACCOUNT]);
-	update_option(WXP_NEW_ARTICLE_CMD, $defalut_val[WXP_NEW_ARTICLE_CMD]);
-	update_option(WXP_RAND_ARTICLE_CMD, $defalut_val[WXP_RAND_ARTICLE_CMD]);
-	update_option(WXP_HOT_ARTICLE_CMD, $defalut_val[WXP_HOT_ARTICLE_CMD]);
-	update_option(WXP_CMD_SEPERATOR, $defalut_val[WXP_CMD_SEPERATOR]);
-	update_option(WXP_DEFAULT_THUMB, $defalut_val[WXP_DEFAULT_THUMB]);
-}
-//清除默认设置
-function delete_weixinpress_option(){
-	delete_option(WXP_TOKEN);
-	delete_option(WXP_URL_STR);
-	delete_option(WXP_WELCOME);
-	delete_option(WXP_WELCOME_CMD);
-	delete_option(WXP_HELP);
-	delete_option(WXP_HELP_CMD);
-	delete_option(WXP_KEYWORD_LENGTH);
-	delete_option(WXP_AUTO_REPLY);
-	delete_option(WXP_KEYWORD_LENGTH_WARNING);
-	delete_option(WXP_KEYWORD_ERROR_WARNING);
-	delete_option(WXP_DEFAULT_ARTICLE_ACCOUNT);
-	delete_option(WXP_NEW_ARTICLE_CMD);
-	delete_option(WXP_RAND_ARTICLE_CMD);
-	delete_option(WXP_HOT_ARTICLE_CMD);
-	delete_option(WXP_CMD_SEPERATOR);
-	delete_option(WXP_DEFAULT_THUMB);
-}
-register_activation_hook(__FILE__,'add_weixinpress_option');
-register_deactivation_hook(__FILE__,'delete_weixinpress_option');
 
 // Custom message bar
 function weixinpress_topbarmessage($msg) {
@@ -322,13 +246,6 @@ function weixinpress_optionpage(){
                         </td>
                     </tr>
                     <tr>
-                        <td class="right"><label>URL标识串：</label></td>
-                        <td class="left">
-                            <input type="text" name="wxp-url-str" value="<?php if($array_weixinpress_option[WXP_URL_STR] != ''){echo $array_weixinpress_option[WXP_URL_STR];}else{ echo 'weixinpress';} ?>"/>
-                            <span class="wxp-notes">填写用于微信（易信）接口URL标识字符串，例如接口URL为:http://你的域名/XXXX，XXXX即为URL标识串，与微信（易信）后台设置一致。默认为weixinpress</span>
-                        </td>
-                    </tr>
-                    <tr>
                         <td class="right"><label>欢迎信息：</label></td>
                         <td class="left">
                             <textarea name="wxp-welcome"><?php echo $array_weixinpress_option[WXP_WELCOME]; ?></textarea>
@@ -452,9 +369,7 @@ function weixinpress_optionpage(){
 add_action('parse_request', 'weixinpress_interface', 4);
 function weixinpress_interface($wp_query){
     traceHttp();
-    $wxp_url_str = get_option(WXP_URL_STR, 'weixinpress');
-    $request_url = $_SERVER['REQUEST_URI'];
-    if(strpos($request_url, '/?'.$wxp_url_str)!==false){
+    if(isset($_GET["signature"])){
         global $weixinpress;
         if(!isset($weixinpress)){
             $weixinpress = new weixinCallback();
@@ -729,7 +644,7 @@ class weixinCallback
         if( $tmpStr == $signature ){
             return true;
         }else{
-            return true;
+            return false;
         }
     }
 }
