@@ -117,6 +117,61 @@ function update_weixinpress_option(){
     weixinpress_topbarmessage('恭喜，更新配置成功');
 }
 
+//添加默认配置
+function add_weixinpress_option(){
+	$defalut_val = array(
+		WXP_TOKEN => uniqid(),
+		WXP_URL_STR => 'weixinpress',
+		WXP_WELCOME => '欢迎关注小站，更多精彩内容，可通过发送关键字获取！如：
+发送“首页”，将获取首页文章
+发送“帮助”或“help”，查看帮助信息
+发送“最新文章”，将获取最新文章
+发送“最热文章”，将获取最热门的文章
+发送“随机文章”，将获取随机选取的文章发送',
+		WXP_WELCOME_CMD => '欢迎 welcome',
+		WXP_HELP => '非常感谢关注小站，可通过发送关键字获取精彩内容！如：
+发送“首页”，将获取首页文章
+发送“帮助”或“help”，查看帮助信息
+发送“最新文章”或“new”，将获取最新文章
+发送“最热文章”或“hot”，将获取最热门的文章
+发送“随机文章”或“rand”，将获取随机选取的文章发送',
+		WXP_HELP_CMD => '帮助 help',
+		WXP_KEYWORD_LENGTH => '15',
+		WXP_AUTO_REPLY => 0,
+		WXP_KEYWORD_LENGTH_WARNING => '',
+		WXP_KEYWORD_ERROR_WARNING => '你输入的关键字未匹配到任何内容，可以换其他关键词试试哦，如：
+发送“首页”，将获取首页文章
+发送“帮助”或“help”，查看帮助信息
+发送“最新文章”，将获取最新文章
+发送“最热文章”，将获取最热门的文章
+发送“随机文章”，将获取随机选取的文章发送',
+		WXP_DEFAULT_ARTICLE_ACCOUNT => 10,
+		WXP_NEW_ARTICLE_CMD => '最新文章 new',
+		WXP_RAND_ARTICLE_CMD => '随机文章 rand',
+		WXP_HOT_ARTICLE_CMD => '最热文章 hot',
+		WXP_CMD_SEPERATOR => '@',
+		WXP_DEFAULT_THUMB => '',
+	);
+	$options = get_weixinpress_option();
+	update_option(WXP_TOKEN, !empty($options[WXP_TOKEN])?$options[WXP_TOKEN]:$defalut_val[WXP_TOKEN]);
+//	update_option(WXP_URL_STR, $defalut_val[WXP_URL_STR]);
+	update_option(WXP_WELCOME, !empty($options[WXP_WELCOME])?$options[WXP_WELCOME]:$defalut_val[WXP_WELCOME]);
+	update_option(WXP_WELCOME_CMD, !empty($options[WXP_WELCOME_CMD])?$options[WXP_WELCOME_CMD]:$defalut_val[WXP_WELCOME_CMD]);
+	update_option(WXP_HELP, !empty($options[WXP_HELP])?$options[WXP_HELP]:$defalut_val[WXP_HELP]);
+	update_option(WXP_HELP_CMD, !empty($options[WXP_HELP_CMD])?$options[WXP_HELP_CMD]:$defalut_val[WXP_HELP_CMD]);
+	update_option(WXP_KEYWORD_LENGTH, !empty($options[WXP_KEYWORD_LENGTH])?$options[WXP_KEYWORD_LENGTH]:$defalut_val[WXP_KEYWORD_LENGTH]);
+	update_option(WXP_AUTO_REPLY, !empty($options[WXP_AUTO_REPLY])?$options[WXP_AUTO_REPLY]:$defalut_val[WXP_AUTO_REPLY]);
+	update_option(WXP_KEYWORD_LENGTH_WARNING, !empty($options[WXP_KEYWORD_LENGTH_WARNING])?$options[WXP_KEYWORD_LENGTH_WARNING]:$defalut_val[WXP_KEYWORD_LENGTH_WARNING]);
+	update_option(WXP_KEYWORD_ERROR_WARNING, !empty($options[WXP_KEYWORD_ERROR_WARNING])?$options[WXP_KEYWORD_ERROR_WARNING]:$defalut_val[WXP_KEYWORD_ERROR_WARNING]);
+	update_option(WXP_DEFAULT_ARTICLE_ACCOUNT, !empty($options[WXP_DEFAULT_ARTICLE_ACCOUNT])?$options[WXP_DEFAULT_ARTICLE_ACCOUNT]:$defalut_val[WXP_DEFAULT_ARTICLE_ACCOUNT]);
+	update_option(WXP_NEW_ARTICLE_CMD, !empty($options[WXP_NEW_ARTICLE_CMD])?$options[WXP_NEW_ARTICLE_CMD]:$defalut_val[WXP_NEW_ARTICLE_CMD]);
+	update_option(WXP_RAND_ARTICLE_CMD, !empty($options[WXP_RAND_ARTICLE_CMD])?$options[WXP_RAND_ARTICLE_CMD]:$defalut_val[WXP_RAND_ARTICLE_CMD]);
+	update_option(WXP_HOT_ARTICLE_CMD, !empty($options[WXP_HOT_ARTICLE_CMD])?$options[WXP_HOT_ARTICLE_CMD]:$defalut_val[WXP_HOT_ARTICLE_CMD]);
+	update_option(WXP_CMD_SEPERATOR, !empty($options[WXP_CMD_SEPERATOR])?$options[WXP_CMD_SEPERATOR]:$defalut_val[WXP_CMD_SEPERATOR]);
+	update_option(WXP_DEFAULT_THUMB, !empty($options[WXP_DEFAULT_THUMB])?$options[WXP_DEFAULT_THUMB]:$defalut_val[WXP_DEFAULT_THUMB]);
+}
+register_activation_hook(__FILE__,'add_weixinpress_option');
+
 // Custom message bar
 function weixinpress_topbarmessage($msg) {
      echo '<div class="updated fade" id="message"><p>' . $msg . '</p></div>';
