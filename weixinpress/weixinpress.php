@@ -1,10 +1,10 @@
 <?php
 /*
 Plugin Name: WeixinPress
-Plugin URI: http://www.houqun.me/articles/roll-out-weixinpress-plugin-for-wordpress.html
+Plugin URI: http://www.houqun.me/bbs/forum.php?gid=1
 Description: WeixinPress的主要功能就是能够将你的微信公众账号和你的WordPress博客关联，搜索和用户发送关键字匹配的文章，依据命令查看最新文章、热门文章和随机文章。<br />
-Version: 0.6.1
-Author: Will HQ
+Version: 0.6.2
+Author: Will HQ , DiDiaoYu
 Author URI: http://www.houqun.me
 */
 
@@ -719,7 +719,7 @@ class weixinCallback
         if( $tmpStr == $signature ){
             return true;
         }else{
-            return true;
+            return false;
         }
     }
 }
