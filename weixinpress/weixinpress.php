@@ -712,7 +712,7 @@ class weixinCallback
             echo "\n".'WEIXIN_TOKEN：'.$weixin_token;
         }
         $tmpArr = array($weixin_token, $timestamp, $nonce);
-        sort($tmpArr);
+        sort($tmpArr, SORT_STRING);//解决微信有时无法响应的bug
         $tmpStr = implode( $tmpArr );
         $tmpStr = sha1( $tmpStr );
         
