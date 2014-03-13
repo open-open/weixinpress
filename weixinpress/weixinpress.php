@@ -123,14 +123,12 @@ function add_weixinpress_option(){
 		WXP_TOKEN => uniqid(),
 		WXP_URL_STR => 'weixinpress',
 		WXP_WELCOME => '欢迎关注小站，更多精彩内容，可通过发送关键字获取！如：
-发送“首页”，将获取首页文章
 发送“帮助”或“help”，查看帮助信息
 发送“最新文章”，将获取最新文章
 发送“最热文章”，将获取最热门的文章
 发送“随机文章”，将获取随机选取的文章发送',
 		WXP_WELCOME_CMD => '欢迎 welcome',
 		WXP_HELP => '非常感谢关注小站，可通过发送关键字获取精彩内容！如：
-发送“首页”，将获取首页文章
 发送“帮助”或“help”，查看帮助信息
 发送“最新文章”或“new”，将获取最新文章
 发送“最热文章”或“hot”，将获取最热门的文章
@@ -140,7 +138,6 @@ function add_weixinpress_option(){
 		WXP_AUTO_REPLY => 0,
 		WXP_KEYWORD_LENGTH_WARNING => '',
 		WXP_KEYWORD_ERROR_WARNING => '你输入的关键字未匹配到任何内容，可以换其他关键词试试哦，如：
-发送“首页”，将获取首页文章
 发送“帮助”或“help”，查看帮助信息
 发送“最新文章”，将获取最新文章
 发送“最热文章”，将获取最热门的文章
