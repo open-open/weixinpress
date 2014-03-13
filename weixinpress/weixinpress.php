@@ -560,29 +560,29 @@ class weixinCallback
             }elseif((count($array_weixinpress_new_cmd)>0)&&in_array($this->keyword, $array_weixinpress_new_cmd)){
                 $this->query('new');
                 if($this->articleCount == 0){
-                        $weixin_not_found = "抱歉，最新文章显示错误，请重试一下 :-) ";
-                        $weixin_not_found = apply_filters('weixin_not_found', $weixin_not_found, $this->keyword);
-                        echo sprintf($textTpl, $fromUsername, $toUsername, $time, $weixin_not_found);
-                    }else{
-                        echo sprintf($picTpl, $fromUsername, $toUsername, $time, $this->articleCount,$this->items);
+					$weixin_not_found = "抱歉，最新文章显示错误，请重试一下 :-) ";
+					$weixin_not_found = apply_filters('weixin_not_found', $weixin_not_found, $this->keyword);
+					echo sprintf($textTpl, $fromUsername, $toUsername, $time, $weixin_not_found);
+				}else{
+					echo sprintf($picTpl, $fromUsername, $toUsername, $time, $this->articleCount,$this->items);
                 }
             }elseif((count($array_weixinpress_rand_cmd)>0)&&in_array($this->keyword, $array_weixinpress_rand_cmd)){
                 $this->query('rand');
                 if($this->articleCount == 0){
-                        $weixin_not_found = "抱歉，随机文章显示错误，请重试一下 :-) ";
-                        $weixin_not_found = apply_filters('weixin_not_found', $weixin_not_found, $this->keyword);
-                        echo sprintf($textTpl, $fromUsername, $toUsername, $time, $weixin_not_found);
-                    }else{
-                        echo sprintf($picTpl, $fromUsername, $toUsername, $time, $this->articleCount,$this->items);
+					$weixin_not_found = "抱歉，随机文章显示错误，请重试一下 :-) ";
+					$weixin_not_found = apply_filters('weixin_not_found', $weixin_not_found, $this->keyword);
+					echo sprintf($textTpl, $fromUsername, $toUsername, $time, $weixin_not_found);
+				}else{
+					echo sprintf($picTpl, $fromUsername, $toUsername, $time, $this->articleCount,$this->items);
                 }
             }elseif((count($array_weixinpress_hot_cmd)>0)&&in_array($this->keyword, $array_weixinpress_hot_cmd)){
                 $this->query('hot');
                 if($this->articleCount == 0){
-                        $weixin_not_found = "抱歉，热门文章显示错误，请重试一下 :-) ";
-                        $weixin_not_found = apply_filters('weixin_not_found', $weixin_not_found, $this->keyword);
-                        echo sprintf($textTpl, $fromUsername, $toUsername, $time, $weixin_not_found);
-                    }else{
-                        echo sprintf($picTpl, $fromUsername, $toUsername, $time, $this->articleCount,$this->items);
+					$weixin_not_found = "抱歉，热门文章显示错误，请重试一下 :-) ";
+					$weixin_not_found = apply_filters('weixin_not_found', $weixin_not_found, $this->keyword);
+					echo sprintf($textTpl, $fromUsername, $toUsername, $time, $weixin_not_found);
+                }else{
+					echo sprintf($picTpl, $fromUsername, $toUsername, $time, $this->articleCount,$this->items);
                 }
             }else {
                 $keyword_length = mb_strwidth(preg_replace('/[\x00-\x7F]/','',$this->keyword),'utf-8')+str_word_count($this->keyword)*2;
