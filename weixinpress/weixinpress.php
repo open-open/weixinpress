@@ -3,7 +3,7 @@
 Plugin Name: WeixinPress
 Plugin URI: http://www.houqun.me/bbs/forum.php?gid=1
 Description: WeixinPress的主要功能就是能够将你的微信公众账号和你的WordPress博客关联，搜索和用户发送关键字匹配的文章，依据命令查看最新文章、热门文章和随机文章。<br />
-Version: 0.6.2
+Version: 0.6.3
 Author: Will HQ , DiDiaoYu
 Author URI: http://www.houqun.me
 */
@@ -121,7 +121,7 @@ function update_weixinpress_option(){
 function add_weixinpress_option(){
 	$defalut_val = array(
 		WXP_TOKEN => uniqid(),
-		WXP_URL_STR => 'weixinpress',
+//		WXP_URL_STR => 'weixinpress',
 		WXP_WELCOME => '欢迎关注小站，更多精彩内容，可通过发送关键字获取！如：
 发送“帮助”或“help”，查看帮助信息
 发送“最新文章”，将获取最新文章
