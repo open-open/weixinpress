@@ -3,7 +3,7 @@
 Plugin Name: WeixinPress
 Plugin URI: http://www.houqun.me/bbs/forum.php?gid=1
 Description: WeixinPress的主要功能就是能够将你的微信公众账号和你的WordPress博客关联，搜索和用户发送关键字匹配的文章，依据命令查看最新文章、热门文章和随机文章。<br />
-Version: 0.6.3
+Version: 0.6.4
 Author: Will HQ , DiDiaoYu
 Author URI: http://www.houqun.me
 */
@@ -16,6 +16,9 @@ define('WXP_HELP'                    , 'wxp_help');
 define('WXP_HELP_CMD'                , 'wxp_help_cmd');
 define('WXP_KEYWORD_LENGTH'          , 'wxp_keyword_length');
 define('WXP_AUTO_REPLY'              , 'wxp_auto_reply');
+define('WXP_KEYWORD_IN_TITLE'        , 'wxp_keyword_in_title');
+define('WXP_KEYWORD_IN_CONTENT'      , 'wxp_keyword_in_content');
+define('WXP_CATEGORY_EXCLUDE'        , 'wxp_category_exclude');
 define('WXP_KEYWORD_LENGTH_WARNING'  , 'wxp_keyword_length_warning');
 define('WXP_KEYWORD_ERROR_WARNING'   , 'wxp_keyword_error_warning');
 define('WXP_DEFAULT_ARTICLE_ACCOUNT' , 'wxp_default_article_account');
@@ -52,7 +55,7 @@ function traceHttp(){
 }
 
 function logger($content){
-    file_put_contents(WXP_FILE_PATH."/log.html", date('Y-m-d H:i:s ').$content.'<br>', FILE_APPEND);
+    //file_put_contents(WXP_FILE_PATH."/log.html", date('Y-m-d H:i:s ').$content.'<br>', FILE_APPEND);
 }
 
 // Add plugin memu    
@@ -73,22 +76,25 @@ function weixinpress_menu() {
 
 // Get setting options from database
 function get_weixinpress_option(){
-    $array_weixinpress_option = array();
-    $array_weixinpress_option[WXP_TOKEN] = stripslashes(get_option(WXP_TOKEN));
-    $array_weixinpress_option[WXP_WELCOME] = stripslashes(get_option(WXP_WELCOME));
-    $array_weixinpress_option[WXP_WELCOME_CMD] = stripslashes(get_option(WXP_WELCOME_CMD));
-    $array_weixinpress_option[WXP_HELP] = stripslashes(get_option(WXP_HELP));
-    $array_weixinpress_option[WXP_HELP_CMD] = stripslashes(get_option(WXP_HELP_CMD));
-    $array_weixinpress_option[WXP_KEYWORD_LENGTH] = get_option(WXP_KEYWORD_LENGTH);
-    $array_weixinpress_option[WXP_AUTO_REPLY] = get_option(WXP_AUTO_REPLY);
-    $array_weixinpress_option[WXP_KEYWORD_LENGTH_WARNING] = stripslashes(get_option(WXP_KEYWORD_LENGTH_WARNING));
-    $array_weixinpress_option[WXP_KEYWORD_ERROR_WARNING] = stripslashes(get_option(WXP_KEYWORD_ERROR_WARNING));
+    $array_weixinpress_option                              = array();
+    $array_weixinpress_option[WXP_TOKEN]                   = stripslashes(get_option(WXP_TOKEN));
+    $array_weixinpress_option[WXP_WELCOME]                 = stripslashes(get_option(WXP_WELCOME));
+    $array_weixinpress_option[WXP_WELCOME_CMD]             = stripslashes(get_option(WXP_WELCOME_CMD));
+    $array_weixinpress_option[WXP_HELP]                    = stripslashes(get_option(WXP_HELP));
+    $array_weixinpress_option[WXP_HELP_CMD]                = stripslashes(get_option(WXP_HELP_CMD));
+    $array_weixinpress_option[WXP_KEYWORD_LENGTH]          = get_option(WXP_KEYWORD_LENGTH);
+    $array_weixinpress_option[WXP_AUTO_REPLY]              = get_option(WXP_AUTO_REPLY);
+    $array_weixinpress_option[WXP_KEYWORD_IN_TITLE]        = get_option(WXP_KEYWORD_IN_TITLE);
+    $array_weixinpress_option[WXP_KEYWORD_IN_CONTENT]      = get_option(WXP_KEYWORD_IN_CONTENT);
+    $array_weixinpress_option[WXP_CATEGORY_EXCLUDE]        = get_option(WXP_CATEGORY_EXCLUDE);
+    $array_weixinpress_option[WXP_KEYWORD_LENGTH_WARNING]  = stripslashes(get_option(WXP_KEYWORD_LENGTH_WARNING));
+    $array_weixinpress_option[WXP_KEYWORD_ERROR_WARNING]   = stripslashes(get_option(WXP_KEYWORD_ERROR_WARNING));
     $array_weixinpress_option[WXP_DEFAULT_ARTICLE_ACCOUNT] = get_option(WXP_DEFAULT_ARTICLE_ACCOUNT);
-    $array_weixinpress_option[WXP_NEW_ARTICLE_CMD] = stripslashes(get_option(WXP_NEW_ARTICLE_CMD));
-    $array_weixinpress_option[WXP_RAND_ARTICLE_CMD] = stripslashes(get_option(WXP_RAND_ARTICLE_CMD));
-    $array_weixinpress_option[WXP_HOT_ARTICLE_CMD] = stripslashes(get_option(WXP_HOT_ARTICLE_CMD));
-    $array_weixinpress_option[WXP_CMD_SEPERATOR] = stripslashes(get_option(WXP_CMD_SEPERATOR));
-    $array_weixinpress_option[WXP_DEFAULT_THUMB] = stripslashes(get_option(WXP_DEFAULT_THUMB));
+    $array_weixinpress_option[WXP_NEW_ARTICLE_CMD]         = stripslashes(get_option(WXP_NEW_ARTICLE_CMD));
+    $array_weixinpress_option[WXP_RAND_ARTICLE_CMD]        = stripslashes(get_option(WXP_RAND_ARTICLE_CMD));
+    $array_weixinpress_option[WXP_HOT_ARTICLE_CMD]         = stripslashes(get_option(WXP_HOT_ARTICLE_CMD));
+    $array_weixinpress_option[WXP_CMD_SEPERATOR]           = stripslashes(get_option(WXP_CMD_SEPERATOR));
+    $array_weixinpress_option[WXP_DEFAULT_THUMB]           = stripslashes(get_option(WXP_DEFAULT_THUMB));
     
     return $array_weixinpress_option;
 }
@@ -102,9 +108,20 @@ function update_weixinpress_option(){
         update_option(WXP_HELP, $_POST['wxp-help']);
         update_option(WXP_HELP_CMD, $_POST['wxp-help-cmd']);
         update_option(WXP_KEYWORD_LENGTH, $_POST['wxp-keyword-length']);
+
         $auto_reply = $_POST['wxp-auto-reply'];
         if($auto_reply != 1 ) {$auto_reply = 0;}
         update_option(WXP_AUTO_REPLY, $auto_reply);
+
+        $keyword_in_title = $_POST['wxp-keyword-in-title'];
+        if($keyword_in_title != 1){$keyword_in_title=0;}
+        update_option(WXP_KEYWORD_IN_TITLE, $keyword_in_title);
+
+        $keyword_in_content = $_POST['wxp-keyword-in-content'];
+        if($keyword_in_content != 1){$keyword_in_content=0;}
+        update_option(WXP_KEYWORD_IN_CONTENT, $keyword_in_content);
+
+        update_option(WXP_CATEGORY_EXCLUDE, $_POST['wxp-category-exclude']);
         update_option(WXP_KEYWORD_LENGTH_WARNING, $_POST['wxp-keyword-length-warning']);
         update_option(WXP_KEYWORD_ERROR_WARNING, $_POST['wxp-keyword-error-warning']);
         update_option(WXP_DEFAULT_ARTICLE_ACCOUNT, $_POST['wxp-default-article-account']);
@@ -136,6 +153,9 @@ function add_weixinpress_option(){
 		WXP_HELP_CMD => '帮助 help',
 		WXP_KEYWORD_LENGTH => '15',
 		WXP_AUTO_REPLY => 0,
+        WXP_KEYWORD_IN_TITLE => 1,
+        WXP_KEYWORD_IN_CONTENT => 1,
+        WXP_CATEGORY_EXCLUDE => '',
 		WXP_KEYWORD_LENGTH_WARNING => '',
 		WXP_KEYWORD_ERROR_WARNING => '你输入的关键字未匹配到任何内容，可以换其他关键词试试哦，如：
 发送“帮助”或“help”，查看帮助信息
@@ -158,6 +178,9 @@ function add_weixinpress_option(){
 	update_option(WXP_HELP_CMD, !empty($options[WXP_HELP_CMD])?$options[WXP_HELP_CMD]:$defalut_val[WXP_HELP_CMD]);
 	update_option(WXP_KEYWORD_LENGTH, !empty($options[WXP_KEYWORD_LENGTH])?$options[WXP_KEYWORD_LENGTH]:$defalut_val[WXP_KEYWORD_LENGTH]);
 	update_option(WXP_AUTO_REPLY, !empty($options[WXP_AUTO_REPLY])?$options[WXP_AUTO_REPLY]:$defalut_val[WXP_AUTO_REPLY]);
+    update_option(WXP_KEYWORD_IN_TITLE, !empty($options[WXP_KEYWORD_IN_TITLE])?$options[WXP_KEYWORD_IN_TITLE]:$defalut_val[WXP_KEYWORD_IN_TITLE]);
+    update_option(WXP_KEYWORD_IN_CONTENT, !empty($options[WXP_KEYWORD_IN_CONTENT])?$options[WXP_KEYWORD_IN_CONTENT]:$defalut_val[WXP_KEYWORD_IN_CONTENT]);
+    update_option(WXP_CATEGORY_EXCLUDE, !empty($options[WXP_CATEGORY_EXCLUDE])?$options[WXP_CATEGORY_EXCLUDE]:$defalut_val[WXP_CATEGORY_EXCLUDE]);
 	update_option(WXP_KEYWORD_LENGTH_WARNING, !empty($options[WXP_KEYWORD_LENGTH_WARNING])?$options[WXP_KEYWORD_LENGTH_WARNING]:$defalut_val[WXP_KEYWORD_LENGTH_WARNING]);
 	update_option(WXP_KEYWORD_ERROR_WARNING, !empty($options[WXP_KEYWORD_ERROR_WARNING])?$options[WXP_KEYWORD_ERROR_WARNING]:$defalut_val[WXP_KEYWORD_ERROR_WARNING]);
 	update_option(WXP_DEFAULT_ARTICLE_ACCOUNT, !empty($options[WXP_DEFAULT_ARTICLE_ACCOUNT])?$options[WXP_DEFAULT_ARTICLE_ACCOUNT]:$defalut_val[WXP_DEFAULT_ARTICLE_ACCOUNT]);
@@ -367,6 +390,22 @@ function weixinpress_optionpage(){
                         </td>
                     </tr>
                     <tr>
+                        <td class="right"><label>关键字查询范围：</label></td>
+                        <td class="left">
+                            <input type="checkbox" name="wxp-keyword-in-title" value="1" <?php if($array_weixinpress_option[WXP_KEYWORD_IN_TITLE]){ ?> checked<?php } ?> readOnly=true/>标题 &nbsp;&nbsp;&nbsp;&nbsp;
+                            <input type="checkbox" name="wxp-keyword-in-content" value="1" <?php if($array_weixinpress_option[WXP_KEYWORD_IN_CONTENT]){ ?> checked<?php } ?>/>内容
+                            <br/>
+                            <span class="wxp-notes">选择关键词查询的范围：查询标题中是否有关键字，还是内容中有关键字，或者二者同时；二者均不选时，默认选择标题中关键字。</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="right"><label>不包含文章类别：</label></td>
+                        <td class="left">
+                            <input type="text" name="wxp-category-exclude" value="<?php echo $array_weixinpress_option[WXP_CATEGORY_EXCLUDE]; ?>"/>
+                            <span class="wxp-notes">填写文章搜索时不包含的文章类别的ID，ID为数字，多个类别用英文逗号(,)隔开;留空，表示查询所有类别下的文章。</span>
+                        </td>
+                    </tr>
+                    <tr>
                         <td class="right"><label>关键字错误提醒：</label></td>
                         <td class="left">
                             <textarea name="wxp-keyword-error-warning"><?php echo $array_weixinpress_option[WXP_KEYWORD_ERROR_WARNING]; ?></textarea>
@@ -427,9 +466,16 @@ function weixinpress_optionpage(){
             <div class="sidebar-box">
                 <h3>关于Weixinpress</h3>
                 <a href="http://www.houqun.me" target="_blank">古侯子博客</a>
-                <a href="http://www.houqun.me/articles/roll-out-weixinpress-plugin-for-wordpress-06.html" target="_blank">查看插件主页</a>
-                <a href="http://www.houqun.me/articles/roll-out-weixinpress-plugin-for-wordpress-06.html" target="_blank">报告插件BUG</a>
-                <a href="http://me.alipay.com/houqun" target="_blank"><b>赞助本插件</b></a>
+                <a href="http://www.houqun.me/bbs/forum.php?mod=forumdisplay&fid=2" target="_blank">查看插件主页</a>
+                <a href="http://www.houqun.me/bbs/forum.php?mod=forumdisplay&fid=37" target="_blank">报告插件BUG</a>
+                
+            </div>
+            <div class="sidebar-box" style="margin-top:10px;">
+                <h3>赞助WeixinPress</h3>
+                <a href="http://me.alipay.com/houqun" target="_blank"><b>点此赞助本插件</b></a>
+                <a href="#">感谢赞助本插件的网友：</a>
+                <a>西小西、*辉、*树森</a>
+                <a>*洋、*宪丰、*红梅</a>
             </div>
         </div>
     </div>
@@ -515,7 +561,6 @@ class weixinCallback
                     $this->keyword = $keywordArray;
                 }
 
-
             }
 
             $time = time();
@@ -539,70 +584,72 @@ class weixinCallback
                         </Articles>
                         <FuncFlag>1</FuncFlag>
                         </xml>';
+            
+            if(strpos($this->keyword, '/:')===false){
+                $weixin_custom_keywords = apply_filters('weixin_custom_keywords',array());
 
-            $weixin_custom_keywords = apply_filters('weixin_custom_keywords',array());
-
-            if(in_array($this->keyword, $weixin_custom_keywords)){
-                do_action('weinxinpress',$this->keyword,$textTpl, $picTpl);
-            }elseif((count($array_weixinpress_welcome_cmd)>0)&&(in_array($this->keyword, $array_weixinpress_welcome_cmd) || $this->keyword == 'subscribe' )){
-                // welcome
-                $weixin_welcome = $array_weixinpress_option[WXP_WELCOME];
-                $weixin_welcome = apply_filters('weixin_welcome',$weixin_welcome);
-                echo sprintf($textTpl, $fromUsername, $toUsername, $time, $weixin_welcome);
-            }elseif((count($array_weixinpress_welcome_cmd)>0)&&in_array($this->keyword, $array_weixinpress_help_cmd)){
-                // give help at the same time
-                $weixin_help = $array_weixinpress_option[WXP_HELP];
-                $weixin_help = apply_filters('weixin_help',$weixin_help);
-                echo sprintf($textTpl, $fromUsername, $toUsername, $time, $weixin_help);
-            }elseif((count($array_weixinpress_new_cmd)>0)&&in_array($this->keyword, $array_weixinpress_new_cmd)){
-                $this->query('new');
-                if($this->articleCount == 0){
-					$weixin_not_found = "抱歉，最新文章显示错误，请重试一下 :-) ";
-					$weixin_not_found = apply_filters('weixin_not_found', $weixin_not_found, $this->keyword);
-					echo sprintf($textTpl, $fromUsername, $toUsername, $time, $weixin_not_found);
-				}else{
-					echo sprintf($picTpl, $fromUsername, $toUsername, $time, $this->articleCount,$this->items);
-                }
-            }elseif((count($array_weixinpress_rand_cmd)>0)&&in_array($this->keyword, $array_weixinpress_rand_cmd)){
-                $this->query('rand');
-                if($this->articleCount == 0){
-					$weixin_not_found = "抱歉，随机文章显示错误，请重试一下 :-) ";
-					$weixin_not_found = apply_filters('weixin_not_found', $weixin_not_found, $this->keyword);
-					echo sprintf($textTpl, $fromUsername, $toUsername, $time, $weixin_not_found);
-				}else{
-					echo sprintf($picTpl, $fromUsername, $toUsername, $time, $this->articleCount,$this->items);
-                }
-            }elseif((count($array_weixinpress_hot_cmd)>0)&&in_array($this->keyword, $array_weixinpress_hot_cmd)){
-                $this->query('hot');
-                if($this->articleCount == 0){
-					$weixin_not_found = "抱歉，热门文章显示错误，请重试一下 :-) ";
-					$weixin_not_found = apply_filters('weixin_not_found', $weixin_not_found, $this->keyword);
-					echo sprintf($textTpl, $fromUsername, $toUsername, $time, $weixin_not_found);
-                }else{
-					echo sprintf($picTpl, $fromUsername, $toUsername, $time, $this->articleCount,$this->items);
-                }
-            }else {
-                $keyword_length = mb_strwidth(preg_replace('/[\x00-\x7F]/','',$this->keyword),'utf-8')+str_word_count($this->keyword)*2;
-
-                $weixin_keyword_allow_length = $wxp_keyword_length;
-                $weixin_keyword_allow_length = apply_filters('weixin_keyword_allow_length',$weixin_keyword_allow_length);
-        
-                if($keyword_length > $weixin_keyword_allow_length){
-                    if($wxp_auto_reply){// if auto reply is set to be true, 
-                        //$weixin_keyword_too_long = '输入的关键字太长，换个稍短的关键字试下？';
-                        $weixin_keyword_too_long = $wxp_keyword_length_warning;
-                        $weixin_keyword_too_long = apply_filters('weixin_keywords_too_long',$weixin_keyword_too_long);
-                        echo sprintf($textTpl, $fromUsername, $toUsername, $time, $weixin_keyword_too_long);
-                    }
-                }elseif( !empty( $this->keyword )){
-                    $this->query();
+                if(in_array($this->keyword, $weixin_custom_keywords)){
+                    do_action('weinxinpress',$this->keyword,$textTpl, $picTpl);
+                }elseif((count($array_weixinpress_welcome_cmd)>0)&&(in_array($this->keyword, $array_weixinpress_welcome_cmd) || $this->keyword == 'subscribe' )){
+                    // welcome
+                    $weixin_welcome = $array_weixinpress_option[WXP_WELCOME];
+                    $weixin_welcome = apply_filters('weixin_welcome',$weixin_welcome);
+                    echo sprintf($textTpl, $fromUsername, $toUsername, $time, $weixin_welcome);
+                }elseif((count($array_weixinpress_welcome_cmd)>0)&&in_array($this->keyword, $array_weixinpress_help_cmd)){
+                    // give help at the same time
+                    $weixin_help = $array_weixinpress_option[WXP_HELP];
+                    $weixin_help = apply_filters('weixin_help',$weixin_help);
+                    echo sprintf($textTpl, $fromUsername, $toUsername, $time, $weixin_help);
+                }elseif((count($array_weixinpress_new_cmd)>0)&&in_array($this->keyword, $array_weixinpress_new_cmd)){
+                    $this->query('new');
                     if($this->articleCount == 0){
-                        //$weixin_not_found = "抱歉，没有找到与【{$this->keyword}】相关的文章，换个关键字，可能就有结果了哦 :-) ";
-                        $weixin_not_found = str_replace('{keyword}', $this->keyword, $wxp_keyword_error_warning);
-                        $weixin_not_found = apply_filters('weixin_not_found', $weixin_not_found, $this->keyword);
-                        echo sprintf($textTpl, $fromUsername, $toUsername, $time, $weixin_not_found);
+    					$weixin_not_found = "抱歉，最新文章显示错误，请重试一下 :-) ";
+    					$weixin_not_found = apply_filters('weixin_not_found', $weixin_not_found, $this->keyword);
+    					echo sprintf($textTpl, $fromUsername, $toUsername, $time, $weixin_not_found);
+    				}else{
+    					echo sprintf($picTpl, $fromUsername, $toUsername, $time, $this->articleCount,$this->items);
+                    }
+                }elseif((count($array_weixinpress_rand_cmd)>0)&&in_array($this->keyword, $array_weixinpress_rand_cmd)){
+                    $this->query('rand');
+                    if($this->articleCount == 0){
+    					$weixin_not_found = "抱歉，随机文章显示错误，请重试一下 :-) ";
+    					$weixin_not_found = apply_filters('weixin_not_found', $weixin_not_found, $this->keyword);
+    					echo sprintf($textTpl, $fromUsername, $toUsername, $time, $weixin_not_found);
+    				}else{
+    					echo sprintf($picTpl, $fromUsername, $toUsername, $time, $this->articleCount,$this->items);
+                    }
+                }elseif((count($array_weixinpress_hot_cmd)>0)&&in_array($this->keyword, $array_weixinpress_hot_cmd)){
+                    $this->query('hot');
+                    if($this->articleCount == 0){
+    					$weixin_not_found = "抱歉，热门文章显示错误，请重试一下 :-) ";
+    					$weixin_not_found = apply_filters('weixin_not_found', $weixin_not_found, $this->keyword);
+    					echo sprintf($textTpl, $fromUsername, $toUsername, $time, $weixin_not_found);
                     }else{
-                        echo sprintf($picTpl, $fromUsername, $toUsername, $time, $this->articleCount,$this->items);
+    					echo sprintf($picTpl, $fromUsername, $toUsername, $time, $this->articleCount,$this->items);
+                    }
+                }else {
+                    $keyword_length = mb_strwidth(preg_replace('/[\x00-\x7F]/','',$this->keyword),'utf-8')+str_word_count($this->keyword)*2;
+
+                    $weixin_keyword_allow_length = $wxp_keyword_length;
+                    $weixin_keyword_allow_length = apply_filters('weixin_keyword_allow_length',$weixin_keyword_allow_length);
+            
+                    if($keyword_length > $weixin_keyword_allow_length){
+                        if($wxp_auto_reply){// if auto reply is set to be true, 
+                            //$weixin_keyword_too_long = '输入的关键字太长，换个稍短的关键字试下？';
+                            $weixin_keyword_too_long = $wxp_keyword_length_warning;
+                            $weixin_keyword_too_long = apply_filters('weixin_keywords_too_long',$weixin_keyword_too_long);
+                            echo sprintf($textTpl, $fromUsername, $toUsername, $time, $weixin_keyword_too_long);
+                        }
+                    }elseif( !empty( $this->keyword )){
+                        $this->query();
+                        if($this->articleCount == 0){
+                            //$weixin_not_found = "抱歉，没有找到与【{$this->keyword}】相关的文章，换个关键字，可能就有结果了哦 :-) ";
+                            $weixin_not_found = str_replace('{keyword}', $this->keyword, $wxp_keyword_error_warning);
+                            $weixin_not_found = apply_filters('weixin_not_found', $weixin_not_found, $this->keyword);
+                            echo sprintf($textTpl, $fromUsername, $toUsername, $time, $weixin_not_found);
+                        }else{
+                            echo sprintf($picTpl, $fromUsername, $toUsername, $time, $this->articleCount,$this->items);
+                        }
                     }
                 }
             }
@@ -630,19 +677,39 @@ class weixinCallback
 
         $weixin_count = apply_filters('weixin_count',$weixin_count);
 
-        switch ($queryArg) {
-            case 'new':
-                $weixin_query_array = array('showposts' => $weixin_count , 'post_status' => 'publish' );
-                break;
-            case 'rand':
-                $weixin_query_array = array('orderby' => 'rand', 'posts_per_page' => $weixin_count , 'post_status' => 'publish' );
-                break;
-             case 'hot':
-                $weixin_query_array = array('orderby' => 'meta_value_num', 'meta_key'=>'views', 'order'=>'DESC', 'posts_per_page' => $weixin_count , 'post_status' => 'publish' );
-                break;
-            default:
-                $weixin_query_array = array('s' => $queryKeyword, 'posts_per_page' => $weixin_count , 'post_status' => 'publish' );
-                break;
+        $category_exclude = trim(get_option(WXP_CATEGORY_EXCLUDE));
+        $category_exclude_array = explode(',', $category_exclude);
+
+        if (empty($category_exclude)){
+            switch ($queryArg) {
+                case 'new':
+                    $weixin_query_array = array('showposts' => $weixin_count , 'post_status' => 'publish' );
+                    break;
+                case 'rand':
+                    $weixin_query_array = array('orderby' => 'rand', 'posts_per_page' => $weixin_count , 'post_status' => 'publish' );
+                    break;
+                 case 'hot':
+                    $weixin_query_array = array('orderby' => 'meta_value_num', 'meta_key'=>'views', 'order'=>'DESC', 'posts_per_page' => $weixin_count , 'post_status' => 'publish' );
+                    break;
+                default:
+                    $weixin_query_array = array('s' => $queryKeyword, 'posts_per_page' => $weixin_count , 'post_status' => 'publish' );
+                    break;
+            }
+        } else {
+            switch ($queryArg) {
+                case 'new':
+                    $weixin_query_array = array('showposts' => $weixin_count , 'post_status' => 'publish', 'category__not_in' => $category_exclude_array );
+                    break;
+                case 'rand':
+                    $weixin_query_array = array('orderby' => 'rand', 'posts_per_page' => $weixin_count , 'post_status' => 'publish', 'category__not_in' => $category_exclude_array );
+                    break;
+                 case 'hot':
+                    $weixin_query_array = array('orderby' => 'meta_value_num', 'meta_key'=>'views', 'order'=>'DESC', 'posts_per_page' => $weixin_count , 'post_status' => 'publish', 'category__not_in' => $category_exclude_array );
+                    break;
+                default:
+                    $weixin_query_array = array('s' => $queryKeyword, 'posts_per_page' => $weixin_count , 'post_status' => 'publish', 'category__not_in' => $category_exclude_array );
+                    break;
+            }
         }
 
         
@@ -744,13 +811,49 @@ if(!function_exists('get_post_first_image')){
     }
 }
 
+$keyword_in_title = get_option(WXP_KEYWORD_IN_TITLE);
+$keyword_in_content = get_option(WXP_KEYWORD_IN_CONTENT);
+
+if($keyword_in_content != 1){
+    if(!function_exists('search_by_title_only')){
+        add_filter( 'posts_search', 'search_by_title_only', 10, 2);
+        function search_by_title_only( $search, &$wp_query ){
+            global $wpdb;
+         
+            if ( empty( $search ) )
+                return $search; // skip processing - no search term in query
+         
+            $q = $wp_query->query_vars;    
+            $n = ! empty( $q['exact'] ) ? '' : '%';
+         
+            $search =
+            $searchand = '';
+         
+            foreach ( (array) $q['search_terms'] as $term ) {
+                $term = esc_sql( like_escape( $term ) );
+                $search .= "{$searchand}($wpdb->posts.post_title LIKE '{$n}{$term}{$n}')";
+                $searchand = ' AND ';
+            }
+         
+            if ( ! empty( $search ) ) {
+                $search = " AND ({$search}) ";
+                if ( ! is_user_logged_in() )
+                    $search .= " AND ($wpdb->posts.post_password = '') ";
+            }
+         
+            return $search;
+        }
+        
+    }
+}
+
 if(!function_exists('search_orderby')){
 
     add_filter('posts_orderby_request', 'search_orderby');
     function search_orderby($orderby = ''){
         global $wpdb,$wp_query;
 
-        $keyword = stripslashes($wp_query->query_vars[s]);
+        $keyword = stripslashes($wp_query->query_vars['s']);
 
         if($keyword){ 
 
@@ -764,7 +867,10 @@ if(!function_exists('search_orderby')){
             foreach( (array) $search_terms as $term ){
                 $term = esc_sql( like_escape( $term ) );
 
-                $case_when .=" + (CASE WHEN {$wpdb->posts}.post_title LIKE '{$term}' THEN 3 ELSE 0 END) + (CASE WHEN {$wpdb->posts}.post_title LIKE '{$n}{$term}{$n}' THEN 2 ELSE 0 END) + (CASE WHEN {$wpdb->posts}.post_content LIKE '{$n}{$term}{$n}' THEN 1 ELSE 0 END)";
+                $case_when .= " + (CASE WHEN {$wpdb->posts}.post_title LIKE '{$term}' THEN 3 ELSE 0 END) ";
+                $case_when .= " + (CASE WHEN {$wpdb->posts}.post_title LIKE '{$n}{$term}{$n}' THEN 2 ELSE 0 END) ";
+                $case_when .= " + (CASE WHEN {$wpdb->posts}.post_content LIKE '{$n}{$term}{$n}' THEN 1 ELSE 0 END)";
+                
             }
 
             return "({$case_when}) DESC, {$wpdb->posts}.post_modified DESC";
